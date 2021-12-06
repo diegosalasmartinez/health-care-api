@@ -1,4 +1,6 @@
-import Person from "../models/PersonModel.js";
+import mongoose from 'mongoose'
+import Person from "../models/PersonModel.js"
+import Doctor from "../models/DoctorModel.js"
 import User from "../models/UserModel.js"
 
 export const getUsers = async (req, res) => {
@@ -7,6 +9,9 @@ export const getUsers = async (req, res) => {
             [
                 {
                     $project: { username: 0, password: 0}
+                },
+                {
+                    $match: { active: { $eq: true } }
                 },
                 {
                     $lookup: {
@@ -47,6 +52,31 @@ export const createUser = async (req, res) => {
         })
         const userCreated = await newUser.save();
         res.status(201).json(userCreated);
+    } catch(e) {
+        res.status(409).json({message: e.message});
+    }
+}
+
+export const updateUser = async (req, res) => {
+    const { id } = req.params;
+    const user = req.body;
+    const { personId, doctorId, role } = user;
+    const { DNI, name, lastName, email, phone, sex } = user.personInfo;
+    const { code, CMP, specialty } = user.doctorInfo;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No user with id: ${id}`);
+    
+    try {
+        const updatedPerson = { DNI, name, lastName, email, phone, sex }; 
+        if (!mongoose.Types.ObjectId.isValid(personId)) return res.status(404).send(`No person with id: ${personId}`);
+        await Person.findOneAndUpdate({_id: personId}, updatedPerson, { new: true });
+        
+        if (role === "DOCTOR") {
+            const updatedDoctor = { code, CMP, specialty };
+            if (!mongoose.Types.ObjectId.isValid(doctorId)) return res.status(404).send(`No doctor with id: ${doctorId}`);
+            await Doctor.findOneAndUpdate({_id: doctorId}, updatedDoctor, { new: true });
+        }
+        res.status(201).json("User updated successfully");
     } catch(e) {
         res.status(409).json({message: e.message});
     }

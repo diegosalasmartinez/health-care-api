@@ -1,5 +1,6 @@
-import Doctor from "../models/DoctorModel.js";
-import Person from "../models/PersonModel.js";
+import mongoose from 'mongoose'
+import Doctor from "../models/DoctorModel.js"
+import Person from "../models/PersonModel.js"
 import User from "../models/UserModel.js"
 
 export const getDoctors = async (req, res) => {
@@ -10,7 +11,7 @@ export const getDoctors = async (req, res) => {
                     $project: { username: 0, password: 0 }
                 },
                 {
-                    $match: { doctorId: { $ne: null}, role: { $eq: "DOCTOR"} }
+                    $match: { doctorId: { $ne: null}, role: { $eq: "DOCTOR"}, active: { $eq: true } }
                 },
                 {
                     $lookup: {
