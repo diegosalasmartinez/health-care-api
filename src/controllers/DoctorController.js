@@ -44,18 +44,19 @@ export const getDoctors = async (req, res) => {
 
 export const createDoctor = async (req, res) => {
     const user = req.body;
+    const { personInfo, doctorInfo } = user;
     const newPerson = new Person({
-        DNI: user.DNI,
-        name: user.name, 
-        lastName: user.lastName, 
-        email: user.email, 
-        phone: user.phone, 
-        sex: user.sex
+        DNI: personInfo.DNI,
+        name: personInfo.name, 
+        lastName: personInfo.lastName, 
+        email: personInfo.email, 
+        phone: personInfo.phone, 
+        sex: personInfo.sex
     })
     const newDoctor = new Doctor({
-        code: user.code,
-        CMP: user.CMP,
-        specialty: user.specialty
+        code: doctorInfo.code,
+        CMP: doctorInfo.CMP,
+        specialty: doctorInfo.specialty
     })
     try {
         const personCreated = await newPerson.save();
@@ -68,7 +69,11 @@ export const createDoctor = async (req, res) => {
             role: user.role
         })
         const userCreated = await newUser.save();
-        res.status(201).json(userCreated);
+        res.status(201).json({
+            user: userCreated, 
+            doctorInfo: doctorCreated, 
+            personInfo: personCreated
+        });
     } catch(e) {
         res.status(409).json({message: e.message});
     }
