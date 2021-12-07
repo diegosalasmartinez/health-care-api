@@ -7,7 +7,7 @@ const patientSchema = mongoose.Schema({
     },
     clinicHistoryId: {
         type: mongoose.Types.ObjectId,
-        required: true
+        required: false
     },
     code: {
         type: String,
