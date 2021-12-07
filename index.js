@@ -6,6 +6,7 @@ import cors from 'cors'
 import userRoutes from './src/routes/UserRoutes.js'
 import doctorRoutes from './src/routes/DoctorRoutes.js'
 import patientRoutes from './src/routes/PatientRoutes.js'
+import specialtyRoutes from './src/routes/SpecialtyRoutes.js'
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(cors());
 app.use('/users', userRoutes);
 app.use('/doctors', doctorRoutes);
 app.use('/patients', patientRoutes);
+app.use('/specialties', specialtyRoutes);
 
 const CONNECTION_URL = "mongodb+srv://admin:adminpasswordDGYNL@cluster0.dcvkp.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 const PORT = process.env.PORT || 5000;
