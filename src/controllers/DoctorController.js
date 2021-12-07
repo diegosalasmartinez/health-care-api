@@ -1,6 +1,3 @@
-import mongoose from 'mongoose'
-import Doctor from "../models/DoctorModel.js"
-import Person from "../models/PersonModel.js"
 import User from "../models/UserModel.js"
 
 export const getDoctors = async (req, res) => {
