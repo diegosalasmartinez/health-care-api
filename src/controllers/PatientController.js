@@ -41,7 +41,7 @@ export const createPatient = async (req, res) => {
 
     try {
         const personCreated = await newPerson.save();
-        const newPatient = new User({
+        const newPatient = new Patient({
             personId: personCreated._id,
             clinicHistoryId: null,
             code: patient.code,
