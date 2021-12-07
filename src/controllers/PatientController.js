@@ -61,3 +61,25 @@ export const createPatient = async (req, res) => {
         res.status(409).json({message: e.message});
     }
 }
+
+export const updatePatient = async (req, res) => {
+    const { id } = req.params;
+    const patient = req.body;
+    const { personId, clinicHistoryId, code, allergies, address, birthday, occupation, civilStatus, nationality } = patient;
+    const { DNI, name, lastName, email, phone, sex } = user.personInfo;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No patient with id: ${id}`);
+    
+    try {
+        const updatedPerson = { DNI, name, lastName, email, phone, sex }; 
+        if (!mongoose.Types.ObjectId.isValid(personId)) return res.status(404).send(`No person with id: ${personId}`);
+        await Person.findOneAndUpdate({_id: personId}, updatedPerson, { new: true });
+        
+        const updatedPatient = { clinicHistoryId, code, allergies, address, birthday, occupation, civilStatus, nationality };
+        await Patient.findOneAndUpdate({_id: id}, updatedPatient, { new: true });
+
+        res.status(201).json("Patient updated successfully");
+    } catch(e) {
+        res.status(409).json({message: e.message});
+    }
+}
