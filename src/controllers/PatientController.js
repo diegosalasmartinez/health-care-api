@@ -4,7 +4,7 @@ import Patient from "../models/PatientModel.js"
 
 export const getPatients = async (req, res) => {
     try {
-        const users = await Patient.aggregate(
+        const patients = await Patient.aggregate(
             [
                 {
                     $match: { active: { $eq: true } }
@@ -21,7 +21,7 @@ export const getPatients = async (req, res) => {
                     $unwind: "$personInfo"
                 }
             ])
-        res.status(200).json(users);
+        res.status(200).json(patients);
     } catch(e) {
         res.status(404).json({message: e.message});
     }
@@ -66,7 +66,7 @@ export const updatePatient = async (req, res) => {
     const { id } = req.params;
     const patient = req.body;
     const { personId, clinicHistoryId, code, allergies, address, birthday, occupation, civilStatus, nationality } = patient;
-    const { DNI, name, lastName, email, phone, sex } = user.personInfo;
+    const { DNI, name, lastName, email, phone, sex } = patient.personInfo;
 
     if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No patient with id: ${id}`);
     
