@@ -75,10 +75,25 @@ export const updatePatient = async (req, res) => {
         if (!mongoose.Types.ObjectId.isValid(personId)) return res.status(404).send(`No person with id: ${personId}`);
         await Person.findOneAndUpdate({_id: personId}, updatedPerson, { new: true });
         
-        const updatedPatient = { clinicHistoryId, code, allergies, address, birthday, occupation, civilStatus, nationality };
+        const updatedPatient = { code, allergies, address, birthday, occupation, civilStatus, nationality };
         await Patient.findOneAndUpdate({_id: id}, updatedPatient, { new: true });
 
         res.status(201).json("Patient updated successfully");
+    } catch(e) {
+        res.status(409).json({message: e.message});
+    }
+}
+
+export const deletePatient = async (req, res) => {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No patient with id: ${id}`);
+    
+    try {
+        const updatedPatient = { active: false }; 
+        await Patient.findOneAndUpdate({_id: id}, updatedPatient, { new: true });
+        
+        res.status(200).json("Patient deleted successfully");
     } catch(e) {
         res.status(409).json({message: e.message});
     }
