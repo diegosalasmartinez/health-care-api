@@ -1,6 +1,10 @@
 import mongoose from 'mongoose'
 
 const patientSchema = mongoose.Schema({
+    personId: {
+        type: mongoose.Types.ObjectId,
+        required: true
+    },
     clinicHistoryId: {
         type: mongoose.Types.ObjectId,
         required: true
@@ -32,9 +36,11 @@ const patientSchema = mongoose.Schema({
     nationality: {
         type: String,
         required: true
+    },
+    active: {
+        type: Boolean,
+        default: true
     }
-},{
-    timestamps: true
 })
 
 var Patient = mongoose.model('Patient', patientSchema);
