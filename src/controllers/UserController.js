@@ -2,6 +2,7 @@ import mongoose from 'mongoose'
 import Person from "../models/PersonModel.js"
 import Doctor from "../models/DoctorModel.js"
 import User from "../models/UserModel.js"
+import Specialty from '../models/SpecialtyModel.js'
 
 export const getUsers = async (req, res) => {
     try {
@@ -45,14 +46,19 @@ export const createUser = async (req, res) => {
     const newDoctor = new Doctor({
         code: doctorInfo.code,
         CMP: doctorInfo.CMP,
-        specialty: doctorInfo.specialty
+        specialtyId: doctorInfo.specialtyId
     })
     try {
         const personCreated = await newPerson.save();
+        let specialtyReferenced = null;
+
         let doctorCreated = null;
         if (user.role === "DOCTOR") {
+            specialtyReferenced = await Specialty.findOne({_id: doctorInfo.specialtyId});
+            if (!specialtyReferenced) return res.status(404).send(`No specialty with id: ${doctorInfo.specialtyId}`);
             doctorCreated = await newDoctor.save();
         }
+
         const newUser = new User({
             personId: personCreated._id,
             doctorId: doctorCreated ? doctorCreated._id : null,
@@ -64,7 +70,8 @@ export const createUser = async (req, res) => {
         res.status(201).json({
             user: userCreated, 
             doctorInfo: doctorCreated, 
-            personInfo: personCreated
+            personInfo: personCreated,
+            specialtyInfo: specialtyReferenced
         });
     } catch(e) {
         res.status(409).json({message: e.message});
@@ -76,7 +83,7 @@ export const updateUser = async (req, res) => {
     const user = req.body;
     const { personId, doctorId, role } = user;
     const { DNI, name, lastName, email, phone, sex } = user.personInfo;
-    const { code, CMP, specialty } = user.doctorInfo;
+    const { code, CMP, specialtyId } = user.doctorInfo;
 
     if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No user with id: ${id}`);
     
@@ -84,10 +91,13 @@ export const updateUser = async (req, res) => {
         const updatedPerson = { DNI, name, lastName, email, phone, sex }; 
         if (!mongoose.Types.ObjectId.isValid(personId)) return res.status(404).send(`No person with id: ${personId}`);
         await Person.findOneAndUpdate({_id: personId}, updatedPerson, { new: true });
-        
+
         if (role === "DOCTOR") {
-            const updatedDoctor = { code, CMP, specialty };
+            const updatedDoctor = { code, CMP, specialtyId };
             if (!mongoose.Types.ObjectId.isValid(doctorId)) return res.status(404).send(`No doctor with id: ${doctorId}`);
+            const specialty = await Specialty.findOne({_id: specialtyId});
+            if (!specialty) return res.status(404).send(`No specialty with id: ${specialtyId}`);
+
             await Doctor.findOneAndUpdate({_id: doctorId}, updatedDoctor, { new: true });
         }
         res.status(201).json("User updated successfully");
