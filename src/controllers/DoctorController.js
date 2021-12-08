@@ -31,6 +31,17 @@ export const getDoctors = async (req, res) => {
                 },
                 {
                     $unwind: "$doctorInfo"
+                },
+                {
+                    $lookup: {
+                        from: "specialties",
+                        localField: "doctorInfo.specialtyId",
+                        foreignField: "_id",
+                        as: "doctorInfo.specialtyInfo",
+                    }
+                },
+                {
+                    $unwind: "$doctorInfo.specialtyInfo"
                 }
             ])
         res.status(200).json(users);
