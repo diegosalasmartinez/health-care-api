@@ -12,7 +12,7 @@ export const getUsers = async (req, res) => {
                     $project: { username: 0, password: 0}
                 },
                 {
-                    $match: { active: { $eq: true } }
+                    $match: { active: { $eq: true }, role: { $ne: "DOCTOR"} }
                 },
                 {
                     $lookup: {
@@ -43,17 +43,18 @@ export const createUser = async (req, res) => {
         phone: personInfo.phone, 
         sex: personInfo.sex
     })
-    const newDoctor = new Doctor({
-        code: doctorInfo.code,
-        CMP: doctorInfo.CMP,
-        specialtyId: doctorInfo.specialtyId
-    })
+    
     try {
         const personCreated = await newPerson.save();
         let specialtyReferenced = null;
 
         let doctorCreated = null;
         if (user.role === "DOCTOR") {
+            const newDoctor = new Doctor({
+                code: doctorInfo.code,
+                CMP: doctorInfo.CMP,
+                specialtyId: doctorInfo.specialtyId
+            })
             specialtyReferenced = await Specialty.findOne({_id: doctorInfo.specialtyId});
             if (!specialtyReferenced) return res.status(404).send(`No specialty with id: ${doctorInfo.specialtyId}`);
             doctorCreated = await newDoctor.save();
@@ -83,7 +84,6 @@ export const updateUser = async (req, res) => {
     const user = req.body;
     const { personId, doctorId, role } = user;
     const { DNI, name, lastName, email, phone, sex } = user.personInfo;
-    const { code, CMP, specialtyId } = user.doctorInfo;
 
     if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No user with id: ${id}`);
     
@@ -93,6 +93,7 @@ export const updateUser = async (req, res) => {
         await Person.findOneAndUpdate({_id: personId}, updatedPerson, { new: true });
 
         if (role === "DOCTOR") {
+            const { code, CMP, specialtyId } = user.doctorInfo;
             const updatedDoctor = { code, CMP, specialtyId };
             if (!mongoose.Types.ObjectId.isValid(doctorId)) return res.status(404).send(`No doctor with id: ${doctorId}`);
             const specialty = await Specialty.findOne({_id: specialtyId});
