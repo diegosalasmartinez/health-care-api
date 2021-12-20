@@ -21,6 +21,9 @@ app.use('/users', userRoutes);
 app.use('/doctors', doctorRoutes);
 app.use('/patients', patientRoutes);
 app.use('/specialties', specialtyRoutes);
+app.get('/', (req, res) => {
+    res.send("Welcome to Heath Care Server by Diego Salas!");
+})
 
 const CONNECTION_URL = process.env.CONNECTION_URL || "";
 const PORT = process.env.PORT || 5000;
