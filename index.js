@@ -2,6 +2,7 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import mongoose from 'mongoose'
 import cors from 'cors'
+import dotenv from 'dotenv'
 
 import userRoutes from './src/routes/UserRoutes.js'
 import doctorRoutes from './src/routes/DoctorRoutes.js'
@@ -9,6 +10,7 @@ import patientRoutes from './src/routes/PatientRoutes.js'
 import specialtyRoutes from './src/routes/SpecialtyRoutes.js'
 
 const app = express();
+dotenv.config();
 
 app.use(express.json());
 app.use(bodyParser.json({limit: "30mb", extended: true}));
@@ -20,7 +22,7 @@ app.use('/doctors', doctorRoutes);
 app.use('/patients', patientRoutes);
 app.use('/specialties', specialtyRoutes);
 
-const CONNECTION_URL = "mongodb+srv://admin:adminpasswordDGYNL@cluster0.dcvkp.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+const CONNECTION_URL = process.env.CONNECTION_URL || "";
 const PORT = process.env.PORT || 5000;
 
 mongoose.connect(CONNECTION_URL, { useNewUrlParser: true, useUnifiedTopology: true})
