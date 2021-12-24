@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get('/', getPatients);
 router.post('/add', createPatient);
-router.post('/:id', updatePatient);
+router.patch('/:id', updatePatient);
 router.post('/delete/:id', deletePatient);
 
 export default router;

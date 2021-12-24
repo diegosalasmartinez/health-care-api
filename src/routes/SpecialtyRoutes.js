@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get('/', getSpecialties);
 router.post('/add', createSpecialty);
-router.post('/:id', updateSpecialty);
+router.patch('/:id', updateSpecialty);
 router.post('/delete/:id', deleteSpecialty);
 
 export default router;
