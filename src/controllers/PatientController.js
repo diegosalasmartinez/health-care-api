@@ -29,7 +29,7 @@ export const getPatients = async (req, res) => {
 
 export const createPatient = async (req, res) => {
     const patient = req.body;
-    const { personInfo } = patient;
+    const { personInfo, clinicHistory } = patient;
     const newPerson = new Person({
         DNI: personInfo.DNI,
         name: personInfo.name, 
@@ -43,7 +43,16 @@ export const createPatient = async (req, res) => {
         const personCreated = await newPerson.save();
         const newPatient = new Patient({
             personId: personCreated._id,
-            clinicHistoryId: null,
+            clinicHistory: {
+                reason: clinicHistory.reason,
+                currentIllness: clinicHistory.currentIllness,
+                historyDesease: clinicHistory.historyDesease,
+                alcohol: clinicHistory.alcohol,
+                smoke: clinicHistory.smoke,
+                drugs: clinicHistory.drugs,
+                sexuality: clinicHistory.sexuality,
+                others: clinicHistory.others
+            },
             code: patient.code,
             allergies: patient.allergies,
             address: patient.address,
@@ -65,7 +74,7 @@ export const createPatient = async (req, res) => {
 export const updatePatient = async (req, res) => {
     const { id } = req.params;
     const patient = req.body;
-    const { personId, clinicHistoryId, code, allergies, address, birthday, occupation, civilStatus, nationality } = patient;
+    const { personId, clinicHistory, code, allergies, address, birthday, occupation, civilStatus, nationality } = patient;
     const { DNI, name, lastName, email, phone, sex } = patient.personInfo;
 
     if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No patient with id: ${id}`);
