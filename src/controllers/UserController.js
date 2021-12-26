@@ -1,10 +1,10 @@
-import mongoose from 'mongoose'
-import Person from "../models/PersonModel.js"
-import Doctor from "../models/DoctorModel.js"
-import User from "../models/UserModel.js"
-import Specialty from '../models/SpecialtyModel.js'
+const mongoose = require('mongoose')
+const Person = require('../models/PersonModel')
+const Doctor = require('../models/DoctorModel')
+const User = require('../models/UserModel')
+const Specialty = require('../models/SpecialtyModel')
 
-export const getUsers = async (req, res) => {
+const getUsers = async (req, res) => {
     try {
         const users = await User.aggregate(
             [
@@ -32,7 +32,7 @@ export const getUsers = async (req, res) => {
     }
 }
 
-export const createUser = async (req, res) => {
+const createUser = async (req, res) => {
     const user = req.body;
     const { personInfo, doctorInfo } = user;
     const newPerson = new Person({
@@ -79,7 +79,7 @@ export const createUser = async (req, res) => {
     }
 }
 
-export const updateUser = async (req, res) => {
+const updateUser = async (req, res) => {
     const { id } = req.params;
     const user = req.body;
     const { personId, doctorId, role } = user;
@@ -107,7 +107,7 @@ export const updateUser = async (req, res) => {
     }
 }
 
-export const deleteUser = async (req, res) => {
+const deleteUser = async (req, res) => {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No user with id: ${id}`);
@@ -120,4 +120,11 @@ export const deleteUser = async (req, res) => {
     } catch(e) {
         res.status(409).json({message: e.message});
     }
+}
+
+module.exports = {
+    getUsers,
+    createUser,
+    updateUser,
+    deleteUser
 }

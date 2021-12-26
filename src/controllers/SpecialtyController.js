@@ -1,59 +1,45 @@
-import mongoose from 'mongoose'
-import Specialty from "../models/SpecialtyModel.js"
+const mongoose = require('mongoose')
+const Specialty = require('../models/SpecialtyModel')
 
-export const getSpecialties = async (req, res) => {
-    try {
-        const specialties = await Specialty.find({
-            active: { $eq: true }
-        })
-        res.status(200).json(specialties);
-    } catch(e) {
-        res.status(404).json({message: e.message});
-    }
+const getSpecialties = async (req, res) => {
+    const specialties = await Specialty.find({
+        active: { $eq: true }
+    })
+    res.status(200).json(specialties);
 }
 
-export const createSpecialty = async (req, res) => {
+const createSpecialty = async (req, res) => {
     const specialty = req.body;
     const newSpecialty = new Specialty({
         code: specialty.code,
         name: specialty.name, 
     })
-    try {
-        const specialtyCreated = await newSpecialty.save();
-        res.status(201).json(specialtyCreated);
-    } catch(e) {
-        res.status(409).json({message: e.message});
-    }
+
+    const specialtyCreated = await newSpecialty.save();
+    res.status(201).json(specialtyCreated);
 }
 
-export const updateSpecialty = async (req, res) => {
+const updateSpecialty = async (req, res) => {
     const { id } = req.params;
     const specialty = req.body;
     const { code, name } = specialty;
+    const updatedSpecialty = { code, name };
 
-    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No specialty with id: ${id}`);
-    
-    try {
-        const updatedSpecialty = { code, name };
-        await Specialty.findOneAndUpdate({_id: id}, updatedSpecialty, { new: true });
-        
-        res.status(201).json("Specialty updated successfully");
-    } catch(e) {
-        res.status(409).json({message: e.message});
-    }
+    await Specialty.findOneAndUpdate({_id: id}, updatedSpecialty, { new: true });
+    res.status(201).json("Specialty updated successfully");
 }
 
-export const deleteSpecialty = async (req, res) => {
+const deleteSpecialty = async (req, res) => {
     const { id } = req.params;
+    const updatedSpecialty = { active: false }; 
 
-    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No specialty with id: ${id}`);
-    
-    try {
-        const updatedSpecialty = { active: false }; 
-        await Specialty.findOneAndUpdate({_id: id}, updatedSpecialty, { new: true });
-        
-        res.status(200).json("Specialty deleted successfully");
-    } catch(e) {
-        res.status(409).json({message: e.message});
-    }
+    await Specialty.findOneAndUpdate({_id: id}, updatedSpecialty, { new: true });
+    res.status(200).json("Specialty deleted successfully");
+}
+
+module.exports = {
+    getSpecialties,
+    createSpecialty,
+    updateSpecialty,
+    deleteSpecialty
 }

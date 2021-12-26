@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+const mongoose = require('mongoose')
 
 const specialtySchema = mongoose.Schema({
     code: {
@@ -17,6 +17,4 @@ const specialtySchema = mongoose.Schema({
     timestamps: true
 })
 
-var Specialty = mongoose.model('Specialty', specialtySchema);
-
-export default Specialty;
+module.exports = mongoose.model('Specialty', specialtySchema)

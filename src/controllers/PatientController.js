@@ -1,8 +1,8 @@
-import mongoose from 'mongoose'
-import Person from "../models/PersonModel.js"
-import Patient from "../models/PatientModel.js"
+const mongoose = require('mongoose')
+const Person = require('../models/PersonModel')
+const Patient = require('../models/PatientModel')
 
-export const getPatients = async (req, res) => {
+const getPatients = async (req, res) => {
     try {
         const patients = await Patient.aggregate(
             [
@@ -27,7 +27,7 @@ export const getPatients = async (req, res) => {
     }
 }
 
-export const createPatient = async (req, res) => {
+const createPatient = async (req, res) => {
     const patient = req.body;
     const { personInfo, clinicHistory } = patient;
     const newPerson = new Person({
@@ -71,7 +71,7 @@ export const createPatient = async (req, res) => {
     }
 }
 
-export const updatePatient = async (req, res) => {
+const updatePatient = async (req, res) => {
     const { id } = req.params;
     const patient = req.body;
     const { personId, clinicHistory, code, allergies, address, birthday, occupation, civilStatus, nationality } = patient;
@@ -93,7 +93,7 @@ export const updatePatient = async (req, res) => {
     }
 }
 
-export const deletePatient = async (req, res) => {
+const deletePatient = async (req, res) => {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No patient with id: ${id}`);
@@ -106,4 +106,11 @@ export const deletePatient = async (req, res) => {
     } catch(e) {
         res.status(409).json({message: e.message});
     }
+}
+
+module.exports = {
+    getPatients,
+    createPatient,
+    updatePatient,
+    deletePatient
 }
