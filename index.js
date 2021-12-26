@@ -6,6 +6,7 @@ const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const cors = require('cors')
 
+const AuthRoutes = require('./src/routes/AuthRoutes')
 const userRoutes = require('./src/routes/UserRoutes')
 const doctorRoutes = require('./src/routes/DoctorRoutes')
 const patientRoutes = require('./src/routes/PatientRoutes')
@@ -20,11 +21,13 @@ app.use(bodyParser.json({limit: "30mb", extended: true}));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cors());
 
-app.get('/', (req, res) => { res.send("Welcome to Heath Care Server by Diego Salas!") })
-app.use('/users', userRoutes);
-app.use('/doctors', doctorRoutes);
-app.use('/patients', patientRoutes);
-app.use('/specialties', specialtyRoutes);
+const baseUrl = "/api/v1"
+app.get(baseUrl + '/', (req, res) => { res.send("Welcome to Heath Care Server by Diego Salas!") })
+app.use(baseUrl + '/auth', AuthRoutes);
+app.use(baseUrl + '/users', userRoutes);
+app.use(baseUrl + '/doctors', doctorRoutes);
+app.use(baseUrl + '/patients', patientRoutes);
+app.use(baseUrl + '/specialties', specialtyRoutes);
 
 app.use(notFoundMiddleware)
 app.use(errorHandlerMiddleware)
