@@ -30,11 +30,12 @@ app.use(helmet());
 app.use(cors());
 app.use(xss());
 
+app.get('/', (req, res) => { res.send("<h1>Welcome to Heath Care Server</h1><p>Developed by Diego Salas</p>") })
+
 const baseUrl = "/api/v1"
-app.get(baseUrl + '/', (req, res) => { res.send("Welcome to Heath Care Server by Diego Salas!") })
-// app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 app.use(baseUrl + '/auth', authRoutes);
 
+//Protected routes
 app.use(authenticationMiddleware)
 app.use(baseUrl + '/users', userRoutes);
 app.use(baseUrl + '/doctors', doctorRoutes);
