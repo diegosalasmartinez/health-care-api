@@ -1,8 +1,8 @@
-import express from 'express'
-import { getDoctors } from '../controllers/DoctorController.js'
+const express = require('express')
+const { getDoctors } = require('../controllers/DoctorController')
 
 const router = express.Router();
 
 router.get('/', getDoctors);
 
-export default router;
+module.exports = router

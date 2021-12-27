@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+const mongoose = require('mongoose')
 
 const doctorSchema = mongoose.Schema({
     specialtyId: {
@@ -15,6 +15,4 @@ const doctorSchema = mongoose.Schema({
     }
 })
 
-var Doctor = mongoose.model('Doctor', doctorSchema);
-
-export default Doctor;
+module.exports = mongoose.model('Doctor', doctorSchema)

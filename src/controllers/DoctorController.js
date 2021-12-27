@@ -1,51 +1,51 @@
-import User from "../models/UserModel.js"
+const User = require('../models/UserModel')
 
-export const getDoctors = async (req, res) => {
-    try {
-        const users = await User.aggregate(
-            [
-                {
-                    $project: { username: 0, password: 0 }
-                },
-                {
-                    $match: { doctorId: { $ne: null}, role: { $eq: "DOCTOR"}, active: { $eq: true } }
-                },
-                {
-                    $lookup: {
-                        from: "people",
-                        localField: "personId",
-                        foreignField: "_id",
-                        as: "personInfo",
-                    }
-                },
-                {
-                    $unwind: "$personInfo"
-                },
-                {
-                    $lookup: {
-                        from: "doctors",
-                        localField: "doctorId",
-                        foreignField: "_id",
-                        as: "doctorInfo",
-                    }
-                },
-                {
-                    $unwind: "$doctorInfo"
-                },
-                {
-                    $lookup: {
-                        from: "specialties",
-                        localField: "doctorInfo.specialtyId",
-                        foreignField: "_id",
-                        as: "doctorInfo.specialtyInfo",
-                    }
-                },
-                {
-                    $unwind: "$doctorInfo.specialtyInfo"
+const getDoctors = async (req, res) => {
+    const users = await User.aggregate(
+        [
+            {
+                $project: { username: 0, password: 0 }
+            },
+            {
+                $match: { doctorId: { $ne: null}, role: { $eq: "DOCTOR"}, active: { $eq: true } }
+            },
+            {
+                $lookup: {
+                    from: "people",
+                    localField: "personId",
+                    foreignField: "_id",
+                    as: "personInfo",
                 }
-            ])
-        res.status(200).json(users);
-    } catch(e) {
-        res.status(404).json({message: e.message});
-    }
+            },
+            {
+                $unwind: "$personInfo"
+            },
+            {
+                $lookup: {
+                    from: "doctors",
+                    localField: "doctorId",
+                    foreignField: "_id",
+                    as: "doctorInfo",
+                }
+            },
+            {
+                $unwind: "$doctorInfo"
+            },
+            {
+                $lookup: {
+                    from: "specialties",
+                    localField: "doctorInfo.specialtyId",
+                    foreignField: "_id",
+                    as: "doctorInfo.specialtyInfo",
+                }
+            },
+            {
+                $unwind: "$doctorInfo.specialtyInfo"
+            }
+        ])
+    res.status(200).json(users);
+}
+
+module.exports = {
+    getDoctors
 }
