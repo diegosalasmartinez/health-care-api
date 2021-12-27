@@ -6,12 +6,13 @@ const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const cors = require('cors')
 
-const AuthRoutes = require('./src/routes/AuthRoutes')
+const authRoutes = require('./src/routes/AuthRoutes')
 const userRoutes = require('./src/routes/UserRoutes')
 const doctorRoutes = require('./src/routes/DoctorRoutes')
 const patientRoutes = require('./src/routes/PatientRoutes')
 const specialtyRoutes = require('./src/routes/SpecialtyRoutes')
 
+const authenticationMiddleware = require('./src/middleware/authenticationMiddleware')
 const errorHandlerMiddleware = require('./src/middleware/errorHandlerMiddleware')
 const notFoundMiddleware = require('./src/middleware/notFoundMiddleware')
 
@@ -23,7 +24,8 @@ app.use(cors());
 
 const baseUrl = "/api/v1"
 app.get(baseUrl + '/', (req, res) => { res.send("Welcome to Heath Care Server by Diego Salas!") })
-app.use(baseUrl + '/auth', AuthRoutes);
+app.use(baseUrl + '/auth', authRoutes);
+app.use(authenticationMiddleware)
 app.use(baseUrl + '/users', userRoutes);
 app.use(baseUrl + '/doctors', doctorRoutes);
 app.use(baseUrl + '/patients', patientRoutes);
