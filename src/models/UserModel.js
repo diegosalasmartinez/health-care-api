@@ -22,6 +22,7 @@ const userSchema = mongoose.Schema({
     },
     role: {
         type: String,
+        enum: ["DOCTOR", "ADMIN", "SECRETARY"],
         required: true
     },
     active: {
@@ -37,9 +38,9 @@ userSchema.pre('save', async function () {
 
 userSchema.methods.createJWT = function () {
     return jwt.sign(
-        { userId: this._id },
+        { userId: this._id, role: this.role },
         process.env.JWT_SECRET,
-        { expiresIn: 300 }
+        { expiresIn: process.env.JWT_LIFETIME }
     )    
 }
 
