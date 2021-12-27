@@ -1,13 +1,43 @@
-import mongoose from 'mongoose'
+const mongoose = require('mongoose')
 
 const patientSchema = mongoose.Schema({
     personId: {
         type: mongoose.Types.ObjectId,
         required: true
     },
-    clinicHistoryId: {
-        type: mongoose.Types.ObjectId,
-        required: false
+    clinicHistory: {
+        reason: {
+            type: String,
+            required: false
+        },
+        currentIllness: {
+            type: String,
+            required: false
+        },
+        historyDesease: {
+            type: String,
+            required: false
+        },
+        alcohol: {
+            type: String,
+            required: false
+        },
+        smoke: {
+            type: String,
+            required: false
+        },
+        drugs: {
+            type: String,
+            required: false
+        },
+        sexuality: {
+            type: String,
+            required: false
+        },
+        others: {
+            type: String,
+            required: false
+        }
     },
     code: {
         type: String,
@@ -15,7 +45,7 @@ const patientSchema = mongoose.Schema({
     },
     allergies: {
         type: String,
-        required: true
+        required: false
     },
     address: {
         type: String,
@@ -27,7 +57,7 @@ const patientSchema = mongoose.Schema({
     },
     occupation: {
         type: String,
-        required: true
+        required: false
     },
     civilStatus: {
         type: String,
@@ -43,6 +73,4 @@ const patientSchema = mongoose.Schema({
     }
 })
 
-var Patient = mongoose.model('Patient', patientSchema);
-
-export default Patient;
+module.exports = mongoose.model('Patient', patientSchema)

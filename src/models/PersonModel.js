@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+const mongoose = require('mongoose')
 
 const personSchema = mongoose.Schema({
     DNI: {
@@ -29,6 +29,4 @@ const personSchema = mongoose.Schema({
     timestamps: true
 })
 
-var Person = mongoose.model('Person', personSchema);
-
-export default Person;
+module.exports = mongoose.model('Person', personSchema)
