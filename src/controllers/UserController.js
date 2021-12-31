@@ -53,6 +53,8 @@ const createUser = async (req, res) => {
         })
         specialtyReferenced = await Specialty.findOne({_id: doctorInfo.specialtyId});
         if (!specialtyReferenced) throw new NotFoundError(`No specialty with id: ${doctorInfo.specialtyId}`);
+        await Specialty.findByIdAndUpdate(doctorInfo.specialtyId, { $inc: { numDoctors: 1 }});
+        
         doctorCreated = await newDoctor.save();
     }
 
@@ -88,9 +90,14 @@ const updateUser = async (req, res) => {
         const specialty = await Specialty.findOne({_id: specialtyId});
         if (!specialty) throw new NotFoundError(`No specialty with id: ${specialtyId}`);
 
+        const prevDoctor = await Doctor.findById(doctorId);
+        if (specialtyId !== prevDoctor.specialtyId) {
+            await Specialty.findByIdAndUpdate(prevDoctor.specialtyId, { $inc: { numDoctors: -1 }});
+            await Specialty.findByIdAndUpdate(specialtyId, { $inc: { numDoctors: 1 }});
+        }
         await Doctor.findOneAndUpdate({_id: doctorId}, updatedDoctor, { new: true });
     }
-    res.status(201).json("User updated successfully");
+    res.status(201).json({message: "User updated successfully"});
 }
 
 const deleteUser = async (req, res) => {
@@ -98,7 +105,7 @@ const deleteUser = async (req, res) => {
     const updatedUser = { active: false }; 
     await User.findOneAndUpdate({_id: id}, updatedUser, { new: true });
     
-    res.status(200).json("User deleted successfully");
+    res.status(200).json({message: "User deleted successfully"});
 }
 
 module.exports = {
