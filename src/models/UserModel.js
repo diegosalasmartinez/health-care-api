@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const { roles } =  require('../utils/index')
 
 const userSchema = mongoose.Schema({
     personId: {
@@ -22,7 +23,7 @@ const userSchema = mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ["DOCTOR", "ADMIN", "SECRETARY"],
+        enum: roles,
         required: true
     },
     active: {
@@ -38,7 +39,7 @@ userSchema.pre('save', async function () {
 
 userSchema.methods.createJWT = function () {
     return jwt.sign(
-        { userId: this._id, role: this.role },
+        { userId: this._id },
         process.env.JWT_SECRET,
         { expiresIn: process.env.JWT_LIFETIME }
     )    
