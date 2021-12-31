@@ -26,7 +26,7 @@ const updateSpecialty = async (req, res) => {
     const updatedSpecialty = { code, name };
 
     await Specialty.findOneAndUpdate({_id: id}, updatedSpecialty, { new: true });
-    res.status(201).json("Specialty updated successfully");
+    res.status(201).json({message: "Specialty updated successfully"});
 }
 
 const deleteSpecialty = async (req, res) => {
@@ -34,7 +34,7 @@ const deleteSpecialty = async (req, res) => {
     const updatedSpecialty = { active: false }; 
 
     await Specialty.findOneAndUpdate({_id: id}, updatedSpecialty, { new: true });
-    res.status(200).json("Specialty deleted successfully");
+    res.status(200).json({message: "Specialty deleted successfully"});
 }
 
 module.exports = {
