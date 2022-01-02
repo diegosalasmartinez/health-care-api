@@ -3,6 +3,7 @@ const Person = require('../models/PersonModel')
 const Doctor = require('../models/DoctorModel')
 const User = require('../models/UserModel')
 const Specialty = require('../models/SpecialtyModel')
+const { rolesObjects } = require('../utils/index')
 const NotFoundError = require('../errors/NotFoundError')
 
 const getUsers = async (req, res) => {
@@ -45,7 +46,7 @@ const createUser = async (req, res) => {
 
     let specialtyReferenced = null;
     let doctorCreated = null;
-    if (user.role === "DOCTOR") {
+    if (user.role === rolesObjects.DOCTOR) {
         const newDoctor = new Doctor({
             code: doctorInfo.code,
             CMP: doctorInfo.CMP,
@@ -84,7 +85,7 @@ const updateUser = async (req, res) => {
     const updatedPerson = { DNI, name, lastName, email, phone, sex }; 
     await Person.findOneAndUpdate({_id: personId}, updatedPerson, { new: true });
 
-    if (role === "DOCTOR") {
+    if (role === rolesObjects.DOCTOR) {
         const { code, CMP, specialtyId } = user.doctorInfo;
         const updatedDoctor = { code, CMP, specialtyId };
         const specialty = await Specialty.findOne({_id: specialtyId});
@@ -102,9 +103,12 @@ const updateUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
     const { id } = req.params;
-    const updatedUser = { active: false }; 
-    await User.findOneAndUpdate({_id: id}, updatedUser, { new: true });
-    
+    const updatedUser = { active: true }; 
+    const user = await User.findOneAndUpdate({_id: id}, updatedUser, { new: true });
+    if (user.role === rolesObjects.DOCTOR) {
+        const doctor = await Doctor.findById(user.doctorId);
+        await Specialty.findByIdAndUpdate(doctor.specialtyId, { $inc: { numDoctors: -1 }});
+    }
     res.status(200).json({message: "User deleted successfully"});
 }
 
