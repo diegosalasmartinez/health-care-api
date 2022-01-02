@@ -73,7 +73,7 @@ const updatePatient = async (req, res) => {
     const updatedPatient = { code, allergies, address, birthday, occupation, civilStatus, nationality };
     await Patient.findOneAndUpdate({_id: id}, updatedPatient, { new: true });
 
-    res.status(201).json("Patient updated successfully");
+    res.status(201).json({message: "Patient updated successfully"});
 }
 
 const deletePatient = async (req, res) => {
@@ -81,7 +81,7 @@ const deletePatient = async (req, res) => {
     const updatedPatient = { active: false }; 
     await Patient.findOneAndUpdate({_id: id}, updatedPatient, { new: true });
     
-    res.status(200).json("Patient deleted successfully");
+    res.status(200).json({message: "Patient deleted successfully"});
 }
 
 module.exports = {

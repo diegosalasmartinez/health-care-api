@@ -9,6 +9,11 @@ const specialtySchema = mongoose.Schema({
         type: String,
         required: true
     },
+    numDoctors: {
+        type: Number,
+        default: 0,
+        required: false
+    },
     active: {
         type: Boolean,
         default: true
