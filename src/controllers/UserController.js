@@ -7,13 +7,14 @@ const { rolesObjects } = require('../utils/index')
 const NotFoundError = require('../errors/NotFoundError')
 
 const getUsers = async (req, res) => {
+    const { offset, limit } = req.query;
     const users = await User.aggregate(
         [
             {
                 $project: { username: 0, password: 0}
             },
             {
-                $match: { active: { $eq: true }, role: { $ne: "DOCTOR"} }
+                $match: { active: { $eq: true }, role: { $ne: rolesObjects.DOCTOR} }
             },
             {
                 $lookup: {
@@ -25,9 +26,16 @@ const getUsers = async (req, res) => {
             },
             {
                 $unwind: "$personInfo"
+            },
+            {
+                $skip: parseInt(offset)
+            },
+            {
+                $limit: parseInt(limit)
             }
         ])
-    res.status(200).json(users);
+    const length = await User.countDocuments({active: { $eq: true }, role: { $ne: rolesObjects.DOCTOR}});
+    res.status(200).json({users, length});
 }
 
 const createUser = async (req, res) => {
