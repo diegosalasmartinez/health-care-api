@@ -7,14 +7,31 @@ const { rolesObjects } = require('../utils/index')
 const NotFoundError = require('../errors/NotFoundError')
 
 const getUsers = async (req, res) => {
-    const { offset, limit } = req.query;
+    const { offset, limit, dni, name, role } = req.query;
+    const matchOptions = {
+        active: { $eq: true },
+        role: { $ne: rolesObjects.DOCTOR }
+    }
+    if (role) {
+        matchOptions.role = {...matchOptions.role, $eq: role }
+    }
+    if (dni) {
+        matchOptions["personInfo.DNI"] = { $regex: '.*' + dni + '.*', $options: 'i' }
+    }
+    if (name) {
+        matchOptions["$expr"] = {
+            "$regexMatch": {
+                "input": "$fullName",
+                "regex": '.*' + name + '.*',
+                "options": "i"
+            }
+        }
+    }
+    
     const users = await User.aggregate(
         [
             {
                 $project: { username: 0, password: 0}
-            },
-            {
-                $match: { active: { $eq: true }, role: { $ne: rolesObjects.DOCTOR} }
             },
             {
                 $lookup: {
@@ -28,14 +45,26 @@ const getUsers = async (req, res) => {
                 $unwind: "$personInfo"
             },
             {
-                $skip: parseInt(offset)
+                $addFields: {
+                    fullName: { $concat: ["$personInfo.name", " ", "$personInfo.lastName"] }
+                }
             },
             {
-                $limit: parseInt(limit)
+                $match: matchOptions
+            },
+            {
+                $facet: {
+                    dataPrev: [ { $count: "count" } ],
+                    data: [
+                        { $skip: parseInt(offset) },
+                        { $limit: parseInt(limit) }
+                    ]
+                }
             }
-        ])
-    const length = await User.countDocuments({active: { $eq: true }, role: { $ne: rolesObjects.DOCTOR}});
-    res.status(200).json({users, length});
+        ]
+    )
+
+    res.status(200).json({users: users[0].data, length: users[0].dataPrev[0].count});
 }
 
 const createUser = async (req, res) => {
