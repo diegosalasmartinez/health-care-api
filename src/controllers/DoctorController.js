@@ -9,7 +9,6 @@ const getDoctors = async (req, res) => {
         doctorId: { $ne: null},
         role: { $eq: rolesObjects.DOCTOR }
     }
-    console.log(code, name, specialtyId);
     if (code) {
         matchOptions["doctorInfo.code"] = { $regex: '.*' + code + '.*', $options: 'i' }
     }
