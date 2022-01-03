@@ -1,13 +1,34 @@
-const User = require('../models/UserModel')
+const mongoose = require('mongoose')
+const User = require('../models/UserModel');
+const { rolesObjects } = require('../utils');
 
 const getDoctors = async (req, res) => {
-    const users = await User.aggregate(
+    const { offset, limit, code, name, specialtyId } = req.query;
+    const matchOptions = {
+        active: { $eq: true },
+        doctorId: { $ne: null},
+        role: { $eq: rolesObjects.DOCTOR }
+    }
+    console.log(code, name, specialtyId);
+    if (code) {
+        matchOptions["doctorInfo.code"] = { $regex: '.*' + code + '.*', $options: 'i' }
+    }
+    if (specialtyId) {
+        matchOptions["doctorInfo.specialtyId"] = { $eq: mongoose.Types.ObjectId(specialtyId) }
+    }
+    if (name) {
+        matchOptions["$expr"] = {
+            "$regexMatch": {
+                "input": "$fullName",
+                "regex": '.*' + name + '.*',
+                "options": "i"
+            }
+        }
+    }
+    const doctorsResponse = await User.aggregate(
         [
             {
                 $project: { username: 0, password: 0 }
-            },
-            {
-                $match: { doctorId: { $ne: null}, role: { $eq: "DOCTOR"}, active: { $eq: true } }
             },
             {
                 $lookup: {
@@ -41,9 +62,28 @@ const getDoctors = async (req, res) => {
             },
             {
                 $unwind: "$doctorInfo.specialtyInfo"
+            },
+            {
+                $addFields: {
+                    fullName: { $concat: ["$personInfo.name", " ", "$personInfo.lastName"] }
+                }
+            },
+            {
+                $match: matchOptions
+            },
+            {
+                $facet: {
+                    dataPrev: [ { $count: "count" } ],
+                    data: [
+                        { $skip: parseInt(offset) },
+                        { $limit: parseInt(limit) }
+                    ]
+                }
             }
         ])
-    res.status(200).json(users);
+    const doctors = doctorsResponse[0].data;
+    const numDoctors = doctorsResponse[0].dataPrev.length > 0 ? doctorsResponse[0].dataPrev[0].count : 0;
+    res.status(200).json({doctors, length: numDoctors});
 }
 
 module.exports = {
