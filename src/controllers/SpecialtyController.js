@@ -1,4 +1,3 @@
-const mongoose = require('mongoose')
 const Specialty = require('../models/SpecialtyModel')
 
 const getSpecialties = async (req, res) => {
