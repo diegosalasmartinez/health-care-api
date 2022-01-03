@@ -1,13 +1,28 @@
-const mongoose = require('mongoose')
 const Person = require('../models/PersonModel')
 const Patient = require('../models/PatientModel')
 
 const getPatients = async (req, res) => {
-    const patients = await Patient.aggregate(
+    const { offset, limit, code, dni, name } = req.query;
+    const matchOptions = {
+        active: { $eq: true }
+    }
+    if (code) {
+        matchOptions.code = { $regex: '.*' + code + '.*', $options: 'i' }
+    }
+    if (dni) {
+        matchOptions["personInfo.DNI"] = { $regex: '.*' + dni + '.*', $options: 'i' }
+    }
+    if (name) {
+        matchOptions["$expr"] = {
+            "$regexMatch": {
+                "input": "$fullName",
+                "regex": '.*' + name + '.*',
+                "options": "i"
+            }
+        }
+    }
+    const patientsResponse = await Patient.aggregate(
         [
-            {
-                $match: { active: { $eq: true } }
-            },
             {
                 $lookup: {
                     from: "people",
@@ -18,9 +33,28 @@ const getPatients = async (req, res) => {
             },
             {
                 $unwind: "$personInfo"
+            },
+            {
+                $addFields: {
+                    fullName: { $concat: ["$personInfo.name", " ", "$personInfo.lastName"] }
+                }
+            },
+            {
+                $match: matchOptions
+            },
+            {
+                $facet: {
+                    dataPrev: [ { $count: "count" } ],
+                    data: [
+                        { $skip: parseInt(offset) },
+                        { $limit: parseInt(limit) }
+                    ]
+                }
             }
         ])
-    res.status(200).json(patients);
+    const patients = patientsResponse[0].data;
+    const numPatients = patientsResponse[0].dataPrev.length > 0 ? patientsResponse[0].dataPrev[0].count : 0;
+    res.status(200).json({patients, length: numPatients});
 }
 
 const createPatient = async (req, res) => {
@@ -73,7 +107,7 @@ const updatePatient = async (req, res) => {
     const updatedPatient = { code, allergies, address, birthday, occupation, civilStatus, nationality };
     await Patient.findOneAndUpdate({_id: id}, updatedPatient, { new: true });
 
-    res.status(201).json("Patient updated successfully");
+    res.status(201).json({message: "Patient updated successfully"});
 }
 
 const deletePatient = async (req, res) => {
@@ -81,7 +115,7 @@ const deletePatient = async (req, res) => {
     const updatedPatient = { active: false }; 
     await Patient.findOneAndUpdate({_id: id}, updatedPatient, { new: true });
     
-    res.status(200).json("Patient deleted successfully");
+    res.status(200).json({message: "Patient deleted successfully"});
 }
 
 module.exports = {

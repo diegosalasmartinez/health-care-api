@@ -22,7 +22,7 @@ const notFoundMiddleware = require('./src/middleware/notFoundMiddleware')
 
 const app = express();
 app.set('trust proxy', 1);
-app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
+app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 200 }));
 app.use(express.json());
 app.use(bodyParser.json({limit: "30mb", extended: true}));
 app.use(bodyParser.urlencoded({extended: true}));
