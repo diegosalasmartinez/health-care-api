@@ -1,4 +1,3 @@
-const mongoose = require('mongoose')
 const Person = require('../models/PersonModel')
 const Doctor = require('../models/DoctorModel')
 const User = require('../models/UserModel')
