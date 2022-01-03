@@ -27,8 +27,8 @@ const getUsers = async (req, res) => {
             }
         }
     }
-    
-    const users = await User.aggregate(
+
+    const usersResponse = await User.aggregate(
         [
             {
                 $project: { username: 0, password: 0}
@@ -64,7 +64,9 @@ const getUsers = async (req, res) => {
         ]
     )
 
-    res.status(200).json({users: users[0].data, length: users[0].dataPrev[0].count});
+    const users = usersResponse[0].data;
+    const numUsers = usersResponse[0].dataPrev.length > 0 ? usersResponse[0].dataPrev[0].count : 0;
+    res.status(200).json({users, length: numUsers});
 }
 
 const createUser = async (req, res) => {
