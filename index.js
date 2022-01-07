@@ -15,6 +15,7 @@ const userRoutes = require('./src/routes/UserRoutes')
 const doctorRoutes = require('./src/routes/DoctorRoutes')
 const patientRoutes = require('./src/routes/PatientRoutes')
 const specialtyRoutes = require('./src/routes/SpecialtyRoutes')
+const appointmentRoutes = require('./src/routes/AppointmentRoutes')
 
 const authenticationMiddleware = require('./src/middleware/authenticationMiddleware')
 const errorHandlerMiddleware = require('./src/middleware/errorHandlerMiddleware')
@@ -41,6 +42,7 @@ app.use(baseUrl + '/users', userRoutes);
 app.use(baseUrl + '/doctors', doctorRoutes);
 app.use(baseUrl + '/patients', patientRoutes);
 app.use(baseUrl + '/specialties', specialtyRoutes);
+app.use(baseUrl + '/appointments', appointmentRoutes);
 
 app.use(notFoundMiddleware)
 app.use(errorHandlerMiddleware)
