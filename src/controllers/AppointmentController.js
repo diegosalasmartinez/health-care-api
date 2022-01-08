@@ -132,27 +132,27 @@ const createAppointment = async (req, res) => {
     res.status(201).json(appointmentCreated);
 }
 
-// const updateSpecialty = async (req, res) => {
-//     const { id } = req.params;
-//     const specialty = req.body;
-//     const { code, name } = specialty;
-//     const updatedSpecialty = { code, name };
+const updateAppointment = async (req, res) => {
+    const { id } = req.params;
+    const appointment = req.body;
+    const { doctorInfo, patientInfo, floor, room, date, time } = appointment;
+    const updatedAppointment = { doctorId: doctorInfo._id, patientId: patientInfo._id, floor, room, date, time };
 
-//     await Specialty.findOneAndUpdate({_id: id}, updatedSpecialty, { new: true });
-//     res.status(201).json({message: "Specialty updated successfully"});
-// }
+    await Appointment.findOneAndUpdate({_id: id}, updatedAppointment, { new: true });
+    res.status(201).json({message: "Appointment updated successfully"});
+}
 
-// const deleteSpecialty = async (req, res) => {
-//     const { id } = req.params;
-//     const updatedSpecialty = { active: false }; 
+const deleteAppointment = async (req, res) => {
+    const { id } = req.params;
+    const updatedAppointment = { status: appointmentStatusObjects.CANCELLED }; 
 
-//     await Specialty.findOneAndUpdate({_id: id}, updatedSpecialty, { new: true });
-//     res.status(200).json({message: "Specialty deleted successfully"});
-// }
+    await Appointment.findOneAndUpdate({_id: id}, updatedAppointment, { new: true });
+    res.status(200).json({message: "Specialty deleted successfully"});
+}
 
 module.exports = {
     getAppointments,
     createAppointment,
-    // updateSpecialty,
-    // deleteSpecialty
+    updateAppointment,
+    deleteAppointment
 }
