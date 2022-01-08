@@ -24,62 +24,61 @@ const getDoctors = async (req, res) => {
             }
         }
     }
-    const doctorsResponse = await User.aggregate(
-        [
-            {
-                $project: { username: 0, password: 0 }
-            },
-            {
-                $lookup: {
-                    from: "people",
-                    localField: "personId",
-                    foreignField: "_id",
-                    as: "personInfo",
-                }
-            },
-            {
-                $unwind: "$personInfo"
-            },
-            {
-                $lookup: {
-                    from: "doctors",
-                    localField: "doctorId",
-                    foreignField: "_id",
-                    as: "doctorInfo",
-                }
-            },
-            {
-                $unwind: "$doctorInfo"
-            },
-            {
-                $lookup: {
-                    from: "specialties",
-                    localField: "doctorInfo.specialtyId",
-                    foreignField: "_id",
-                    as: "doctorInfo.specialtyInfo",
-                }
-            },
-            {
-                $unwind: "$doctorInfo.specialtyInfo"
-            },
-            {
-                $addFields: {
-                    fullName: { $concat: ["$personInfo.name", " ", "$personInfo.lastName"] }
-                }
-            },
-            {
-                $match: matchOptions
-            },
-            {
-                $facet: {
-                    dataPrev: [ { $count: "count" } ],
-                    data: [
-                        { $skip: parseInt(offset) },
-                        { $limit: parseInt(limit) }
-                    ]
-                }
+    const doctorsResponse = await User.aggregate([
+        {
+            $project: { username: 0, password: 0 }
+        },
+        {
+            $lookup: {
+                from: "people",
+                localField: "personId",
+                foreignField: "_id",
+                as: "personInfo",
             }
-        ])
+        },
+        {
+            $unwind: "$personInfo"
+        },
+        {
+            $lookup: {
+                from: "doctors",
+                localField: "doctorId",
+                foreignField: "_id",
+                as: "doctorInfo",
+            }
+        },
+        {
+            $unwind: "$doctorInfo"
+        },
+        {
+            $lookup: {
+                from: "specialties",
+                localField: "doctorInfo.specialtyId",
+                foreignField: "_id",
+                as: "doctorInfo.specialtyInfo",
+            }
+        },
+        {
+            $unwind: "$doctorInfo.specialtyInfo"
+        },
+        {
+            $addFields: {
+                fullName: { $concat: ["$personInfo.name", " ", "$personInfo.lastName"] }
+            }
+        },
+        {
+            $match: matchOptions
+        },
+        {
+            $facet: {
+                dataPrev: [ { $count: "count" } ],
+                data: [
+                    { $skip: parseInt(offset) },
+                    { $limit: parseInt(limit) }
+                ]
+            }
+        }
+    ])
     const doctors = doctorsResponse[0].data;
     const numDoctors = doctorsResponse[0].dataPrev.length > 0 ? doctorsResponse[0].dataPrev[0].count : 0;
     res.status(200).json({doctors, length: numDoctors});

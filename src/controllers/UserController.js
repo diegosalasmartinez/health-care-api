@@ -27,41 +27,39 @@ const getUsers = async (req, res) => {
         }
     }
 
-    const usersResponse = await User.aggregate(
-        [
-            {
-                $project: { username: 0, password: 0}
-            },
-            {
-                $lookup: {
-                    from: "people",
-                    localField: "personId",
-                    foreignField: "_id",
-                    as: "personInfo"
-                }
-            },
-            {
-                $unwind: "$personInfo"
-            },
-            {
-                $addFields: {
-                    fullName: { $concat: ["$personInfo.name", " ", "$personInfo.lastName"] }
-                }
-            },
-            {
-                $match: matchOptions
-            },
-            {
-                $facet: {
-                    dataPrev: [ { $count: "count" } ],
-                    data: [
-                        { $skip: parseInt(offset) },
-                        { $limit: parseInt(limit) }
-                    ]
-                }
+    const usersResponse = await User.aggregate([
+        {
+            $project: { username: 0, password: 0}
+        },
+        {
+            $lookup: {
+                from: "people",
+                localField: "personId",
+                foreignField: "_id",
+                as: "personInfo"
             }
-        ]
-    )
+        },
+        {
+            $unwind: "$personInfo"
+        },
+        {
+            $addFields: {
+                fullName: { $concat: ["$personInfo.name", " ", "$personInfo.lastName"] }
+            }
+        },
+        {
+            $match: matchOptions
+        },
+        {
+            $facet: {
+                dataPrev: [ { $count: "count" } ],
+                data: [
+                    { $skip: parseInt(offset) },
+                    { $limit: parseInt(limit) }
+                ]
+            }
+        }
+    ])
 
     const users = usersResponse[0].data;
     const numUsers = usersResponse[0].dataPrev.length > 0 ? usersResponse[0].dataPrev[0].count : 0;
