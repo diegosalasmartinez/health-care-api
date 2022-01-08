@@ -21,37 +21,36 @@ const getPatients = async (req, res) => {
             }
         }
     }
-    const patientsResponse = await Patient.aggregate(
-        [
-            {
-                $lookup: {
-                    from: "people",
-                    localField: "personId",
-                    foreignField: "_id",
-                    as: "personInfo",
-                }
-            },
-            {
-                $unwind: "$personInfo"
-            },
-            {
-                $addFields: {
-                    fullName: { $concat: ["$personInfo.name", " ", "$personInfo.lastName"] }
-                }
-            },
-            {
-                $match: matchOptions
-            },
-            {
-                $facet: {
-                    dataPrev: [ { $count: "count" } ],
-                    data: [
-                        { $skip: parseInt(offset) },
-                        { $limit: parseInt(limit) }
-                    ]
-                }
+    const patientsResponse = await Patient.aggregate([
+        {
+            $lookup: {
+                from: "people",
+                localField: "personId",
+                foreignField: "_id",
+                as: "personInfo",
             }
-        ])
+        },
+        {
+            $unwind: "$personInfo"
+        },
+        {
+            $addFields: {
+                fullName: { $concat: ["$personInfo.name", " ", "$personInfo.lastName"] }
+            }
+        },
+        {
+            $match: matchOptions
+        },
+        {
+            $facet: {
+                dataPrev: [ { $count: "count" } ],
+                data: [
+                    { $skip: parseInt(offset) },
+                    { $limit: parseInt(limit) }
+                ]
+            }
+        }
+    ])
     const patients = patientsResponse[0].data;
     const numPatients = patientsResponse[0].dataPrev.length > 0 ? patientsResponse[0].dataPrev[0].count : 0;
     res.status(200).json({patients, length: numPatients});
