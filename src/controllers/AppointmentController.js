@@ -2,9 +2,18 @@ const Appointment = require('../models/AppointmentModel');
 const { appointmentStatusObjects } = require('../utils');
 
 const getAppointments = async (req, res) => {
+    await fetchAppointments(req, res, appointmentStatusObjects.CREATED)
+}
+
+const getAppointmentsCompleted = async (req, res) => {
+    await fetchAppointments(req, res, appointmentStatusObjects.FINISHED)
+}
+
+const fetchAppointments = async (req, res, status) => {
     const { offset, limit, patient, doctor } = req.query;
     const matchOptions = {
-        active: { $eq: true }
+        active: { $eq: true },
+        status: { $eq: status }
     }
     if (patient) {
         matchOptions["$expr"] = {
@@ -152,6 +161,7 @@ const deleteAppointment = async (req, res) => {
 
 module.exports = {
     getAppointments,
+    getAppointmentsCompleted,
     createAppointment,
     updateAppointment,
     deleteAppointment
