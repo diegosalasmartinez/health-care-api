@@ -1,10 +1,20 @@
+const mongoose = require('mongoose')
 const Appointment = require('../models/AppointmentModel');
-const { appointmentStatusObjects } = require('../utils');
+const { appointmentStatusObjects, rolesObjects } = require('../utils');
 
 const getAppointments = async (req, res) => {
+    await fetchAppointments(req, res, appointmentStatusObjects.CREATED)
+}
+
+const getAppointmentsCompleted = async (req, res) => {
+    await fetchAppointments(req, res, appointmentStatusObjects.FINISHED)
+}
+
+const fetchAppointments = async (req, res, status) => {
     const { offset, limit, patient, doctor } = req.query;
     const matchOptions = {
-        active: { $eq: true }
+        active: { $eq: true },
+        status: { $eq: status }
     }
     if (patient) {
         matchOptions["$expr"] = {
@@ -15,7 +25,9 @@ const getAppointments = async (req, res) => {
             }
         }
     }
-    if (doctor) {
+    if (req.user.role === rolesObjects.DOCTOR) {
+        matchOptions.doctorId = { $eq: mongoose.Types.ObjectId(req.user._id) }
+    } else if (doctor) {
         matchOptions["$expr"] = {
             "$regexMatch": {
                 "input": "$doctorInfo.fullName",
@@ -142,6 +154,15 @@ const updateAppointment = async (req, res) => {
     res.status(201).json({message: "Appointment updated successfully"});
 }
 
+const completeAppointment = async (req, res) => {
+    const { id } = req.params;
+    const appointment = req.body;
+    const updatedAppointment = { details: appointment.details, status: appointmentStatusObjects.FINISHED };
+
+    await Appointment.findOneAndUpdate({_id: id}, updatedAppointment, { new: true });
+    res.status(201).json({message: "Appointment completed successfully"});
+}
+
 const deleteAppointment = async (req, res) => {
     const { id } = req.params;
     const updatedAppointment = { status: appointmentStatusObjects.CANCELLED }; 
@@ -152,7 +173,9 @@ const deleteAppointment = async (req, res) => {
 
 module.exports = {
     getAppointments,
+    getAppointmentsCompleted,
     createAppointment,
     updateAppointment,
+    completeAppointment,
     deleteAppointment
 }
