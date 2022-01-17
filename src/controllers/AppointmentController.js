@@ -116,12 +116,13 @@ const fetchAppointments = async (req, res, status) => {
             $facet: {
                 dataPrev: [ { $count: "count" } ],
                 data: [
+                    { $sort: { date: 1, time: 1 } },
                     { $skip: parseInt(offset) },
                     { $limit: parseInt(limit) }
                 ]
             }
         }
-    ])
+    ]).allowDiskUse(true);
 
     const appointments = appointmentsResponse[0].data;
     const numAppointments = appointmentsResponse[0].dataPrev.length > 0 ? appointmentsResponse[0].dataPrev[0].count : 0;
