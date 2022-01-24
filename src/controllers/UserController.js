@@ -3,7 +3,7 @@ const Doctor = require('../models/DoctorModel')
 const User = require('../models/UserModel')
 const Specialty = require('../models/SpecialtyModel')
 const { rolesObjects } = require('../utils/index')
-const NotFoundError = require('../errors/NotFoundError')
+const { BadRequestError, NotFoundError } = require('../errors')
 
 const getUsers = async (req, res) => {
     const { offset, limit, dni, name, role } = req.query;
@@ -141,9 +141,15 @@ const changePassword = async (req, res) => {
     const { user } = req;
     const { password } = req.body;
 
-    const encryptedPassword = await User().encryptPassword(password);
-    await User.findOneAndUpdate({_id: user._id}, { password: encryptedPassword }, { new: true });
-    res.status(201).json({message: "Password changed successfully"});
+    const actualUser = await User.findById(user._id);
+    const passwordsMatch = await actualUser.comparePassword(password);
+    if (passwordsMatch) {
+        throw new BadRequestError("The new password you entered is the same as your old password. Enter a different password.")
+    } else {
+        const encryptedPassword = await actualUser.encryptPassword(password);
+        await User.findOneAndUpdate({_id: user._id}, { password: encryptedPassword }, { new: true });
+        res.status(201).json({message: "Password changed successfully"});
+    }
 }
 
 const deleteUser = async (req, res) => {
