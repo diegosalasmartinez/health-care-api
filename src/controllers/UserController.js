@@ -137,6 +137,15 @@ const updateUser = async (req, res) => {
     res.status(201).json({message: "User updated successfully"});
 }
 
+const changePassword = async (req, res) => {
+    const { user } = req;
+    const { password } = req.body;
+
+    const encryptedPassword = await User().encryptPassword(password);
+    await User.findOneAndUpdate({_id: user._id}, { password: encryptedPassword }, { new: true });
+    res.status(201).json({message: "Password changed successfully"});
+}
+
 const deleteUser = async (req, res) => {
     const { id } = req.params;
     const updatedUser = { active: true }; 
@@ -152,5 +161,6 @@ module.exports = {
     getUsers,
     createUser,
     updateUser,
+    changePassword,
     deleteUser
 }
