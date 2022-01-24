@@ -109,6 +109,17 @@ const updatePatient = async (req, res) => {
     res.status(201).json({message: "Patient updated successfully"});
 }
 
+const updatePatientHistory = async (req, res) => {
+    const { id } = req.params;
+    const patient = req.body;
+    const { clinicHistory } = patient;
+    
+    const updatedPatient = { clinicHistory: {...clinicHistory} };
+    await Patient.findOneAndUpdate({_id: id}, updatedPatient, { new: true });
+
+    res.status(201).json({message: "Patient updated successfully"});
+}
+
 const deletePatient = async (req, res) => {
     const { id } = req.params;
     const updatedPatient = { active: false }; 
@@ -121,5 +132,6 @@ module.exports = {
     getPatients,
     createPatient,
     updatePatient,
+    updatePatientHistory,
     deletePatient
 }
