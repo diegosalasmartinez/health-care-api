@@ -5,7 +5,7 @@ const User = require('../models/UserModel');
 const getBestDoctors = async (req, res) => {
     const doctorsResponse = await Appointment.aggregate([
         {
-            $match: { date: { $lte: new Date() } }
+            $match: { date: { $lte: new Date() } },
         },
         {
             $lookup: {
@@ -77,6 +77,25 @@ const getBestDoctors = async (req, res) => {
     res.status(200).json(doctorsResponse);
 }
 
+const getBestSpecialties = async (req, res) => {
+    const response = await Appointment.aggregate([
+        {
+            $group: {
+                _id: { year: { $year: "$date"}, month : { $month: "$date" } },
+                count: { $sum: 1}
+            }
+        },
+        {
+            $sort: {
+                "_id.year": 1,
+                "_id.month": 1,
+            }
+        }
+    ])
+    res.status(200).json(response);
+}
+
 module.exports = {
     getBestDoctors,
+    getBestSpecialties
 }
