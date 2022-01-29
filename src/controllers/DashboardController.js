@@ -53,6 +53,7 @@ const getDoctors = async (req, res) => {
         },
         {
             $project: { 
+                "doctorId": 1, 
                 "doctor.personInfo.DNI": 1, 
                 "doctor.personInfo.name": 1, 
                 "doctor.personInfo.lastName": 1, 
