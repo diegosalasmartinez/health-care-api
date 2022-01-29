@@ -69,6 +69,9 @@ const getDoctors = async (req, res) => {
                 doctor: { $first: "$doctor" },
                 count: { $sum: 1 }
             }
+        },
+        {
+            $limit: 3
         }
     ])
     res.status(200).json(doctorsResponse);
