@@ -160,9 +160,12 @@ const getHistory = async (req, res) => {
         },
         {
             $sort: {
-                "_id.year": 1,
-                "_id.month": 1,
+                "_id.year": -1,
+                "_id.month": -1,
             }
+        },
+        {
+            $limit: 12
         }
     ])
     res.status(200).json(response);
