@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const Appointment = require('../models/AppointmentModel');
 const User = require('../models/UserModel');
 
-const getDoctors = async (req, res) => {
+const getBestDoctors = async (req, res) => {
     const doctorsResponse = await Appointment.aggregate([
         {
             $match: { date: { $lte: new Date() } }
@@ -71,13 +71,12 @@ const getDoctors = async (req, res) => {
             }
         },
         {
-            $limit: 3
+            $limit: 10
         }
     ])
     res.status(200).json(doctorsResponse);
 }
 
 module.exports = {
-    getDoctors,
-    
+    getBestDoctors,
 }
