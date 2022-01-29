@@ -5,7 +5,12 @@ const User = require('../models/UserModel');
 const getBestDoctors = async (req, res) => {
     const doctorsResponse = await Appointment.aggregate([
         {
-            $match: { date: { $lte: new Date() } },
+            $match: {
+                $expr: {
+                    $eq: [ { $year: "$date" }, { $year: new Date() }],
+                    $eq: [ { $month: "$date" }, { $month: new Date() }],
+                }
+            },
         },
         {
             $lookup: {
