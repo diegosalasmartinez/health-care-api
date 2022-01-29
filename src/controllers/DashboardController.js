@@ -52,6 +52,17 @@ const getDoctors = async (req, res) => {
             $unwind: "$doctor.doctorInfo.specialtyInfo"
         },
         {
+            $project: { 
+                "doctor.personInfo.DNI": 1, 
+                "doctor.personInfo.name": 1, 
+                "doctor.personInfo.lastName": 1, 
+                "doctor.doctorInfo.code": 1, 
+                "doctor.doctorInfo.CMP": 1, 
+                "doctor.doctorInfo.specialtyInfo.code": 1, 
+                "doctor.doctorInfo.specialtyInfo.name": 1, 
+            }
+        },
+        {
             $group: {
                 _id: "$doctorId",
                 doctor: { $first: "$doctor" },
