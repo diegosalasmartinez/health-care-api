@@ -120,23 +120,23 @@ const getBestSpecialties = async (req, res) => {
                 from: "specialties",
                 localField: "doctor.doctorInfo.specialtyId",
                 foreignField: "_id",
-                as: "doctor.specialtyInfo",
+                as: "specialty",
             }
         },
         {
-            $unwind: "$doctor.specialtyInfo"
+            $unwind: "$specialty"
         },
         {
             $project: { 
-                "doctorId": 1, 
-                "doctor.specialtyInfo.code": 1, 
-                "doctor.specialtyInfo.name": 1, 
+                "specialty._id": 1,
+                "specialty.code": 1,
+                "specialty.name": 1
             }
         },
         {
             $group: {
-                _id: "$doctorId",
-                doctor: { $first: "$doctor" },
+                _id: "$specialty._id",
+                specialty: { $first: "$specialty" },
                 count: { $sum: 1 }
             }
         },
