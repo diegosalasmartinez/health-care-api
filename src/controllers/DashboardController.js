@@ -1,6 +1,4 @@
-const mongoose = require('mongoose')
 const Appointment = require('../models/AppointmentModel');
-const User = require('../models/UserModel');
 
 const getBestDoctors = async (req, res) => {
     const doctorsResponse = await Appointment.aggregate([
@@ -76,6 +74,9 @@ const getBestDoctors = async (req, res) => {
             }
         },
         {
+            $sort: { count: -1 }
+        },
+        {
             $limit: 10
         }
     ])
@@ -83,6 +84,73 @@ const getBestDoctors = async (req, res) => {
 }
 
 const getBestSpecialties = async (req, res) => {
+    const specialtiesResponse = await Appointment.aggregate([
+        {
+            $match: {
+                $expr: {
+                    $eq: [ { $year: "$date" }, { $year: new Date() }],
+                    $eq: [ { $month: "$date" }, { $month: new Date() }],
+                }
+            },
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "doctorId",
+                foreignField: "_id",
+                as: "doctor",
+            }
+        },
+        {
+            $unwind: "$doctor"
+        },
+        {
+            $lookup: {
+                from: "doctors",
+                localField: "doctor.doctorId",
+                foreignField: "_id",
+                as: "doctor.doctorInfo",
+            }
+        },
+        {
+            $unwind: "$doctor.doctorInfo"
+        },
+        {
+            $lookup: {
+                from: "specialties",
+                localField: "doctor.doctorInfo.specialtyId",
+                foreignField: "_id",
+                as: "specialty",
+            }
+        },
+        {
+            $unwind: "$specialty"
+        },
+        {
+            $project: { 
+                "specialty._id": 1,
+                "specialty.code": 1,
+                "specialty.name": 1
+            }
+        },
+        {
+            $group: {
+                _id: "$specialty._id",
+                specialty: { $first: "$specialty" },
+                count: { $sum: 1 }
+            }
+        },
+        {
+            $sort: { count: -1 }
+        },
+        {
+            $limit: 5
+        }
+    ])
+    res.status(200).json(specialtiesResponse);
+}
+
+const getHistory = async (req, res) => {
     const response = await Appointment.aggregate([
         {
             $group: {
@@ -92,9 +160,12 @@ const getBestSpecialties = async (req, res) => {
         },
         {
             $sort: {
-                "_id.year": 1,
-                "_id.month": 1,
+                "_id.year": -1,
+                "_id.month": -1,
             }
+        },
+        {
+            $limit: 12
         }
     ])
     res.status(200).json(response);
@@ -102,5 +173,6 @@ const getBestSpecialties = async (req, res) => {
 
 module.exports = {
     getBestDoctors,
-    getBestSpecialties
+    getBestSpecialties,
+    getHistory
 }
