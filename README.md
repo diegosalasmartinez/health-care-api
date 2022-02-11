@@ -1,71 +1,62 @@
-# Getting Started with Create React App
+# Health Care
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Health Care is meant to be a system able to manage all hospital activities and staff managment. This repo only contains the back-end side for this system. See also [Health Care](https://github.com/diegosalasmartinez/health_care) to get access to the front-end project.
 
-## Available Scripts
+## Basic Usage
 
-In the project directory, you can run:
+You can visit the project on [Health Care](https://diegosalas-healthcare.web.app). You can use the following credentials to access as the administrator of the system: 
 
-### `npm start`
+```bash
+username: admin
+password: adminadmin
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Instalation
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+1. Clone the project to your computer.
 
-### `npm test`
+2. Install all the dependencies of the project
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+``` bash
+npm install
+```
 
-### `npm run build`
+3. Create a [MongoDB](https://account.mongodb.com/) for the application. Select a name for the project and it will deploy a cluster automatically.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+4. Create a database user in `Database Access`. Copy the username and password
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+5. Allow your current IP Address to access to the database in `Network Access`. Select the IP Adress 0.0.0.0/0
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+6. Select your cluster and select connect in `Databases`. Click on `Connect your application` and copy the connection url.
 
-### `npm run eject`
+7. Create a `.env` file with the following content:
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```javascript
+DB_USER =  {User you created}
+DB_PASSWORD = {Password you created}
+CONNECTION_URL = {Connection url you copied. Don't forget to change <password> with your the password you created}
+JWT_SECRET = {JWT Secret the app will use to manage authentication and authorization}
+JWT_LIFETIME = {JWT Lifetime the app will use. e.g. 30d}
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+8. Start the project
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+``` bash
+npm start
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+9. Navigate to [http://localhost:5000](http://localhost:5000). The app will automatically reload if you change any of the source files.
 
-## Learn More
+## App Info
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Author
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Diego Salas [Diego Salas](https://www.linkedin.com/in/diego-alejandro-salas-martinez/)
 
-### Code Splitting
+### Version
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+1.0.0
 
-### Analyzing the Bundle Size
+### License
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-"# health_care_api" 
+This project is licensed under the MIT License.
