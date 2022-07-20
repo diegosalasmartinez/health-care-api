@@ -1,4 +1,4 @@
-# Health Care
+# Health Care API
 
 Health Care is meant to be a system able to manage all hospital activities and staff managment. This repo only contains the back-end side for this system. See also [Health Care](https://github.com/diegosalasmartinez/health_care) to get access to the front-end project.
 
