@@ -47,6 +47,8 @@ npm start
 
 9. Navigate to [http://localhost:5000](http://localhost:5000). The app will automatically reload if you change any of the source files.
 
+10. As user routes are protected, you might need to manually insert your admin user in your MongoDB. Remember passwords are encrypted with bcryptjs.
+
 ## App Info
 
 ### Author
