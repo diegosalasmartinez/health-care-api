@@ -34,7 +34,7 @@ npm install
 ```bash
 DB_USER =  user you created
 DB_PASSWORD = password you created
-CONNECTION_URL = connection url you copied. Don't forget to change <password> with your the password you created
+CONNECTION_URL = connection url you copied. Do not forget to change <password> with your the password you created
 JWT_SECRET = JWT Secret the app will use to manage authentication and authorization
 JWT_LIFETIME = JWT Lifetime the app will use. e.g. 30d
 ```
